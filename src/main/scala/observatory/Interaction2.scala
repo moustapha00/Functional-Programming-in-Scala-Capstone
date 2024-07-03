@@ -8,15 +8,51 @@ object Interaction2 extends Interaction2Interface:
   /**
     * @return The available layers of the application
     */
-  def availableLayers: Seq[Layer] =
-    ???
+  def availableLayers: Seq[Layer] = {
+    val temperatureColorScale: Seq[(Temperature, Color)] = Seq(
+      (60, Color(255, 255, 255)),
+      (32, Color(255, 0, 0)),
+      (12, Color(255, 255, 0)),
+      (0, Color(0, 255, 255)),
+      (-15, Color(0, 0, 255)),
+      (-27, Color(255, 0, 255)),
+      (-50, Color(33, 0, 107)),
+      (-60, Color(0, 0, 0))
+    )
+
+    val deviationColorScale: Seq[(Temperature, Color)] = Seq(
+      (7, Color(0, 0, 0)),
+      (4, Color(255, 0, 0)),
+      (2, Color(255, 255, 0)),
+      (0, Color(255, 255, 255)),
+      (-2, Color(0, 255, 255)),
+      (-7, Color(0, 0, 255))
+    )
+
+    val temperatureLayer = Layer(
+      layerName = LayerName.Temperatures,
+      colorScale = temperatureColorScale,
+      bounds = 1975 to 1990
+    )
+
+    val deviationLayer = Layer(
+      layerName = LayerName.Deviations,
+      colorScale = deviationColorScale,
+      bounds = 1991 to 2015
+    )
+
+    Seq(temperatureLayer, deviationLayer)
+  }
 
   /**
     * @param selectedLayer A signal carrying the layer selected by the user
     * @return A signal containing the year bounds corresponding to the selected layer
     */
-  def yearBounds(selectedLayer: Signal[Layer]): Signal[Range] =
-    ???
+  def yearBounds(selectedLayer: Signal[Layer]): Signal[Range] = {
+    Signal {
+      selectedLayer().bounds
+    }
+  }
 
   /**
     * @param selectedLayer The selected layer
@@ -26,25 +62,39 @@ object Interaction2 extends Interaction2Interface:
     *         this method should return the closest value that is included
     *         in the `selectedLayer` bounds.
     */
-  def yearSelection(selectedLayer: Signal[Layer], sliderValue: Signal[Year]): Signal[Year] =
-    ???
+  def yearSelection(selectedLayer: Signal[Layer], sliderValue: Signal[Year]): Signal[Year] = {
+    Signal {
+      val bounds = selectedLayer().bounds
+      val year = sliderValue()
+      year.max(bounds.end).min(bounds.start)
+    }
+  }
 
   /**
     * @param selectedLayer The selected layer
     * @param selectedYear The selected year
     * @return The URL pattern to retrieve tiles
     */
-  def layerUrlPattern(selectedLayer: Signal[Layer], selectedYear: Signal[Year]): Signal[String] =
-    ???
+  def layerUrlPattern(selectedLayer: Signal[Layer], selectedYear: Signal[Year]): Signal[String] = {
+    Signal {
+      val layer = selectedLayer()
+      val year = selectedYear()
+      s"target/${layer.layerName.id}/$year/{z}/{x}/{y}.png"
+    }
+  }
 
   /**
     * @param selectedLayer The selected layer
     * @param selectedYear The selected year
     * @return The caption to show
     */
-  def caption(selectedLayer: Signal[Layer], selectedYear: Signal[Year]): Signal[String] =
-    ???
-
+  def caption(selectedLayer: Signal[Layer], selectedYear: Signal[Year]): Signal[String] = {
+    Signal {
+      val layer = selectedLayer()
+      val year = selectedYear()
+      s"${layer.layerName.id} ($year)"
+    }
+  }
 
 // Interface used by the grading infrastructure. Do not change signatures
 // or your submission will fail with a NoSuchMethodError.

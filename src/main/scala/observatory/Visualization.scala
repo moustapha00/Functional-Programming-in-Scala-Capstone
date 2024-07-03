@@ -29,9 +29,9 @@ object Visualization extends VisualizationInterface:
       val deltaLat = lat2 - lat1
       val deltaLon = lon2 - lon1
       val dDelta = if (deltaLat == 0 && deltaLon == 0) {
-        0
-      } else if (lat1 + lat2 == 0) {
-        Pi
+        0 // equal points
+      } else if (lat1 == -lat2 && abs(lon1 - lon2) == Pi) {
+        Pi // antipodes
       } else {
         acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltaLon))
       }
