@@ -60,7 +60,7 @@ object Interaction extends InteractionInterface:
     yearlyData: Iterable[(Year, Data)],
     generateImage: (Year, Tile, Data) => Unit
   ): Unit = {
-    val zoomLevels = 0 to 3
+    val zoomLevels = 0 to 1 // 0 to 3 is default
     yearlyData.foreach { case (year, data) =>
       for (zoom <- zoomLevels; x <- 0 until (1 << zoom); y <- 0 until (1 << zoom)) {
         val tile = Tile(x, y, zoom)
